@@ -14,7 +14,7 @@ class CustomerInvoiceHistory(models.AbstractModel):
         invoices = self.env["account.move"].search(
             [
                 ("partner_id", "in", docids),
-                ("move_type", "in", ["out_invoice", "out_refund"]),
+                ("type", "in", ["out_invoice", "out_refund"]),
                 ("state", "not in", ["draft", "canceled"]),
             ]
         )
@@ -39,9 +39,9 @@ class CustomerInvoiceHistory(models.AbstractModel):
 
             credit = 0.0
             debit = 0.0
-            if inv.move_type == "out_refund":
+            if inv.type == "out_refund":
                 credit = round(inv.amount_total, 2)
-            elif inv.move_type == "out_invoice":
+            elif inv.type == "out_invoice":
                 debit = round(inv.amount_total, 2)
 
             sorted_data.append(
