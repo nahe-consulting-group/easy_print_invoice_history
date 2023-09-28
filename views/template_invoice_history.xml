@@ -35,9 +35,6 @@
                                                 <t t-set="balance" t-value="balance + line['debit'] - line['credit']"/>
                                                 <t t-esc="round(balance, 2)"/>
                                             </td>
-                                            <td><t t-if="line['payment_groups']">
-                                                <t t-esc="line['payment_groups']"/>
-                                            </t>
                                         </td>
                                         </tr>
                                     </t>
