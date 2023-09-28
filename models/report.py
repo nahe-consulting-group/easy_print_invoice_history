@@ -33,9 +33,6 @@ class CustomerInvoiceHistory(models.AbstractModel):
         sorted_data = []
 
         for inv in invoices:
-            payment_groups = ", ".join(
-                [pg.display_name for pg in inv.payment_group_ids]
-            )
 
             credit = 0.0
             debit = 0.0
@@ -50,7 +47,6 @@ class CustomerInvoiceHistory(models.AbstractModel):
                     "name": inv.name,
                     "credit": credit,
                     "debit": debit,
-                    "payment_groups": payment_groups,
                 }
             )
 
@@ -61,7 +57,6 @@ class CustomerInvoiceHistory(models.AbstractModel):
                     "name": pay.name,
                     "credit": round(pay.payments_amount, 2),
                     "debit": 0.0,
-                    "payment_groups": "",
                 }
             )
 
