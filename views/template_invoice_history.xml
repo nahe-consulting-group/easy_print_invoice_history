@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <template id="report_invoice_history">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <style>
+                        .balance-column {
+                            min-width: 100px;  /* o cualquier otro valor que te funcione */
+                            white-space: nowrap;  /* evita que el contenido se rompa en varias líneas */
+                        }
+                    </style>
+                    <div class="page">
+                        <h2>Historial de Facturas y Pagos para <span t-esc="o.name"/></h2>
+                        <table class="table table-condensed">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Nombre del Documento</th>
+                                    <th>Crédito</th>
+                                    <th>Débito</th>
+                                    <th>Saldo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="balance" t-value="0"/>
+                                    <t t-foreach="sorted_data" t-as="line">
+                                        
+                                        <tr>
+                                            <td><t t-esc="line['date']"/></td>
+                                            <td><t t-esc="line['name']"/></td>
+                                            <td><t t-esc="line['credit']"/></td>
+                                            <td><t t-esc="line['debit']"/></td>
+                                            <td class="balance-column">
+                                                <t t-set="balance" t-value="balance + line['debit'] - line['credit']"/>
+                                                <t t-esc="round(balance, 2)"/>
+                                            </td>
+                                            <td><t t-if="line['payment_groups']">
+                                                <t t-esc="line['payment_groups']"/>
+                                            </t>
+                                        </td>
+                                        </tr>
+                                    </t>
+                            </tbody>
+                        </table>
+                        <span>Saldo: <t t-esc="round(balance, 2)"/></span>
+                    </div>
+                </t>
+            </t>
+            </t>
+        </template>
+</odoo>
