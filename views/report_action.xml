@@ -1,9 +1,19 @@
 <odoo>
+
 	<record id="action_report_invoice_history" model="ir.actions.report">
-    <field name="name">Ficha de cuenta corrient</field>
-    <field name="model">res.partner</field>
-    <field name="report_type">qweb-pdf</field>
-    <field name="report_name">easy_print_invoice_history.report_invoice_history</field>
-    <field name="report_file">easy_print_invoice_history.report_invoice_history</field>
+        <field name="name">Ficha de cuenta corriente</field>
+        <field name="model">res.partner</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">easy_print_invoice_history.report_invoice_history</field>
+        <field name="report_file">easy_print_invoice_history.report_invoice_history</field>
 	</record>
+
+    <record id="action_report_invoice_history2" model="ir.actions.report">
+        <field name="name">Ficha saldo clientes</field>
+        <field name="model">res.partner</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">easy_print_invoice_history.report_invoice_history2</field>
+        <field name="report_file">easy_print_invoice_history.report_invoice_history2</field>
+    </record>
+
 </odoo>

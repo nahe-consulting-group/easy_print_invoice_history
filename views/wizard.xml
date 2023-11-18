@@ -1,0 +1,27 @@
+<odoo>
+    <record id="view_invoice_history_wizard_form" model="ir.ui.view">
+        <field name="name">invoice.history.wizard.form</field>
+        <field name="model">invoice.history.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                </group>
+                <footer>
+                    <button string="Generar Informe" type="object" class="btn-primary" name="button_generate_report"/>
+                    <button string="Generar Informe2" type="object" class="btn-primary" name="button_generate_report2"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_show_invoice_history_wizard" model="ir.actions.act_window">
+        <field name="name">Seleccionar Rango de Fechas</field>
+        <field name="res_model">invoice.history.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="easy_print_invoice_history.view_invoice_history_wizard_form"/>
+        <field name="target">new</field>
+    </record>
+</odoo>

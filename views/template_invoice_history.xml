@@ -1,49 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-        <template id="report_invoice_history">
-            <t t-call="web.html_container">
-                <t t-foreach="docs" t-as="o">
-                <t t-call="web.external_layout">
-                    <style>
-                        .balance-column {
-                            min-width: 100px;  /* o cualquier otro valor que te funcione */
-                            white-space: nowrap;  /* evita que el contenido se rompa en varias líneas */
-                        }
-                    </style>
-                    <div class="page">
-                        <h2>Historial de Facturas y Pagos para <span t-esc="o.name"/></h2>
-                        <table class="table table-condensed">
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Nombre del Documento</th>
-                                    <th>Crédito</th>
-                                    <th>Débito</th>
-                                    <th>Saldo</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t t-set="balance" t-value="0"/>
-                                    <t t-foreach="sorted_data" t-as="line">
-                                        
+<template id="report_invoice_history">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="web.external_layout">
+                <style>
+                    .balance-column {
+                        min-width: 100px;
+                        white-space: nowrap;
+                    }
+                </style>
+                <div class="page">
+                    <h2>Historial de Facturas y Pagos para <span t-esc="o.name"/></h2>
+                    <span>Fecha del informe: <t t-esc="report_date"/> Desde: <t t-esc="date_from"/> Hasta: <t t-esc="date_to"/></span>
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Nombre del Documento</th>
+                                <th>Débito</th>
+                                <th>Crédito</th>
+                                <th>Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-set="balance" t-value="0"/>
+                                <t t-foreach="sorted_data" t-as="line">
+                                    <t t-set="balance" t-value="balance - line['debit'] + line['credit']"/>
+                                    <t t-if="line['date'] &gt;= date_from and line['date'] &lt;= date_to">
                                         <tr>
                                             <td><t t-esc="line['date']"/></td>
                                             <td><t t-esc="line['name']"/></td>
-                                            <td><t t-esc="line['credit']"/></td>
-                                            <td><t t-esc="line['debit']"/></td>
-                                            <td class="balance-column">
-                                                <t t-set="balance" t-value="balance + line['debit'] - line['credit']"/>
-                                                <t t-esc="round(balance, 2)"/>
+                                            <td style="text-align: right;"><t t-esc="'{0:,.2f}'.format(line['debit'])"/></td>
+                                            <td style="text-align: right;"><t t-esc="'{0:,.2f}'.format(line['credit'])"/></td>
+                                            <td class="balance-column" style="text-align: right;">
+                                                <t t-esc="'{0:,.2f}'.format(round(balance, 2))"/>
                                             </td>
-                                        </td>
                                         </tr>
-                                    </t>
-                            </tbody>
-                        </table>
-                        <span>Saldo: <t t-esc="round(balance, 2)"/></span>
-                    </div>
-                </t>
+                                </t>
+                            </t>
+                        </tbody>
+                    </table>
+                    <!-- SALDO ADEUDADO si el balance es menor que 0 -->
+                    <span style="text-align: right; font-size: 24px; font-weight: bold; float: right;" t-if="balance &lt; 0">
+                        SALDO ADEUDADO <t t-esc="'{0:,.2f}'.format(round(balance, 2))"/>
+                    </span>
+
+                    <!-- SALDO A FAVOR si el balance es mayor o igual a 0 -->
+                    <span style="text-align: right; font-size: 24px; font-weight: bold; float: right;" t-if="balance >= 0">
+                        SALDO A FAVOR <t t-esc="'{0:,.2f}'.format(round(balance, 2))"/>
+                    </span>
+
+                </div>
             </t>
+        </t>
+    </t>
+</template>
+
+<template id="report_invoice_history2">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="web.external_layout">
+                <style>
+                    .balance-column {
+                        min-width: 100px;
+                        white-space: nowrap;
+                    }
+                    table {
+                        line-height: 0.6;
+                    }
+                </style>
+                <div class="page">
+                    <h2><span t-esc="o.name"/></h2>
+                    <span>Fecha del informe: <t t-esc="report_date"/> Desde: <t t-esc="date_from"/> Hasta: <t t-esc="date_to"/></span>
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Nombre del Documento</th>
+                                <th>Débito</th>
+                                <th>Crédito</th>
+                                <th>Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-set="balance" t-value="0"/>
+                                <t t-foreach="sorted_data" t-as="line">
+                                    <t t-set="balance" t-value="balance - line['debit'] + line['credit']"/>
+                                    <t t-if="line['date'] &gt;= date_from and line['date'] &lt;= date_to">
+                                        <tr>
+                                            <td><t t-esc="line['date']"/></td>
+                                            <td><t t-esc="line['name']"/></td>
+                                            <td style="text-align: right;"><t t-esc="'{0:,.2f}'.format(line['debit'])"/></td>
+                                            <td style="text-align: right;"><t t-esc="'{0:,.2f}'.format(line['credit'])"/></td>
+                                            <td class="balance-column" style="text-align: right;">
+                                                <t t-esc="'{0:,.2f}'.format(round(balance, 2))"/>
+                                            </td>
+                                        </tr>
+                                </t>
+                            </t>
+                        </tbody>
+
+                    </table>
+                    <!-- SALDO ADEUDADO si el balance es menor que 0 -->
+                    <span style="text-align: right; font-size: 24px; font-weight: bold; float: right;" t-if="balance &lt; 0">
+                        SALDO ADEUDADO <t t-esc="'{0:,.2f}'.format(round(balance, 2))"/>
+                    </span>
+
+                    <!-- SALDO A FAVOR si el balance es mayor o igual a 0 -->
+                    <span style="text-align: right; font-size: 24px; font-weight: bold; float: right;" t-if="balance >= 0">
+                        SALDO A FAVOR <t t-esc="'{0:,.2f}'.format(round(balance, 2))"/>
+                    </span>
+                </div>
             </t>
-        </template>
+        </t>
+    </t>
+</template>
 </odoo>

@@ -7,7 +7,7 @@
     "website": "https://www.nahe.com.ar",
     "license": "AGPL-3",
     "category": "Accounting",
-    "version": "15.0.2.0.0",
+    "version": "15.0.4.0.0",
     "development_status": "Production/Stable",
     "application": False,
     "installable": True,
@@ -20,5 +20,7 @@
         "views/res_partner_view.xml",
         "views/report_action.xml",
         "views/template_invoice_history.xml",
+        "views/wizard.xml",
+        "security/wizard_access.xml",
     ],
 }

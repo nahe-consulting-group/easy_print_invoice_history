@@ -11,6 +11,12 @@
                         <span class="o_stat_text">Imprimir</span>
                     </div>
                 </button>
+                <!--button class="oe_stat_button" type="object" name="button_print_invoice_history2" icon="fa-money">
+                    <div class="o_form_field o_stat_info">
+                        <span class="o_stat_value">Ficha saldo cliente</span>
+                        <span class="o_stat_text">Imprimir</span>
+                    </div>
+                </button-->
             </div>
         </field>
     </record>
