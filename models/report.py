@@ -13,20 +13,14 @@ class CustomerInvoiceHistory(models.AbstractModel):
     @api.model
     def _get_report_values(self, docids, data=None):
         # Configurar la localización para formatear los números
-        locale.setlocale(locale.LC_ALL, "es_ES.UTF-8")
+        locale.setlocale(locale.LC_ALL, "es_UY.UTF-8")
         if docids is None:
             docids = data.get("active_ids", [])
         invoices = self.env["account.move"].search(
             [
-                "&",
-                "&",
-                "&",
                 ("partner_id", "in", docids),
                 ("move_type", "in", ["out_invoice", "out_refund"]),
                 ("state", "not in", ["draft", "canceled"]),
-                "|",
-                ("journal_id.l10n_latam_use_documents", "=", True),
-                ("journal_id", "=", 14),
             ]
         )
 
@@ -38,7 +32,10 @@ class CustomerInvoiceHistory(models.AbstractModel):
         )
 
         payments = self.env["account.payment.group"].search(
-            [("partner_id", "in", docids), ("receiptbook_id", "=", 1)]
+            [
+                ("partner_id", "in", docids),
+                ("partner_type", "=", "customer"),
+            ]
         )
 
         sorted_data = []
@@ -61,11 +58,26 @@ class CustomerInvoiceHistory(models.AbstractModel):
             )
 
         for pay in payments:
+            # Sumar los montos de los pagos individuales dentro del grupo de pagos
+            total_payment_amount = sum(payment.amount for payment in pay.payment_ids)
+
+            # Obtener el nombre basado en las prioridades
+            if pay.name:
+                payment_name = pay.name
+            elif pay.communication:
+                payment_name = pay.communication
+            else:
+                # Si no hay nombre ni comunicación, usamos el nombre del diario de la primera línea de pago
+                if pay.payment_ids:
+                    payment_name = pay.payment_ids[0].journal_id.name
+                else:
+                    payment_name = "Sin nombre"  # Fallback en caso extremo
+
             sorted_data.append(
                 {
                     "date": pay.payment_date,
-                    "name": pay.name,
-                    "credit": round(pay.payments_amount, 2),
+                    "name": payment_name,  # Usar el nombre determinado por la lógica
+                    "credit": round(total_payment_amount, 2),
                     "debit": 0.0,
                 }
             )
@@ -110,10 +122,8 @@ class CustomerInvoiceHistory2(models.AbstractModel):
         invoices = self.env["account.move"].search(
             [
                 ("partner_id", "in", docids),
-                ("move_type", "in", ["out_invoice", "out_refund"]),
+                ("move_type", "in", ["in_invoice", "in_refund"]),
                 ("state", "not in", ["draft", "canceled"]),
-                ("journal_id.l10n_latam_use_documents", "=", False),
-                ("journal_id", "!=", 14),
             ]
         )
 
@@ -125,7 +135,10 @@ class CustomerInvoiceHistory2(models.AbstractModel):
         )
 
         payments = self.env["account.payment.group"].search(
-            [("partner_id", "in", docids), ("receiptbook_id", "=", 3)]
+            [
+                ("partner_id", "in", docids),
+                ("partner_type", "=", "supplier"),
+            ]
         )
 
         sorted_data = []
@@ -137,9 +150,9 @@ class CustomerInvoiceHistory2(models.AbstractModel):
 
             credit = 0.0
             debit = 0.0
-            if inv.move_type == "out_refund":
+            if inv.move_type == "in_refund":
                 credit = round(inv.amount_total, 2)
-            elif inv.move_type == "out_invoice":
+            elif inv.move_type == "in_invoice":
                 debit = round(inv.amount_total, 2)
 
             sorted_data.append(
@@ -152,11 +165,26 @@ class CustomerInvoiceHistory2(models.AbstractModel):
             )
 
         for pay in payments:
+            # Sumar los montos de los pagos individuales dentro del grupo de pagos
+            total_payment_amount = sum(payment.amount for payment in pay.payment_ids)
+
+            # Obtener el nombre basado en las prioridades
+            if pay.name:
+                payment_name = pay.name
+            elif pay.communication:
+                payment_name = pay.communication
+            else:
+                # Si no hay nombre ni comunicación, usamos el nombre del diario de la primera línea de pago
+                if pay.payment_ids:
+                    payment_name = pay.payment_ids[0].journal_id.name
+                else:
+                    payment_name = "Sin nombre"  # Fallback en caso extremo
+
             sorted_data.append(
                 {
                     "date": pay.payment_date,
-                    "name": pay.name,
-                    "credit": round(pay.payments_amount, 2),
+                    "name": payment_name,  # Usar el nombre determinado por la lógica
+                    "credit": round(total_payment_amount, 2),
                     "debit": 0.0,
                 }
             )

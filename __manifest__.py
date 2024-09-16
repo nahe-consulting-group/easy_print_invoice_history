@@ -3,11 +3,11 @@
     "summary": """
         Allows to print invice and payments history for any partner with only 1 button in partner form. 
     """,
-    "author": "Nahe Consulting Group",
+    "author": "Nahe Consulting Group, CABATEL",
     "website": "https://www.nahe.com.ar",
     "license": "AGPL-3",
     "category": "Accounting",
-    "version": "15.0.4.0.0",
+    "version": "14.0.6.0.0",
     "development_status": "Production/Stable",
     "application": False,
     "installable": True,
